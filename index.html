@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librito · Red de Tutorías Escolares</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-amber-50/50 text-slate-800 font-sans min-h-screen flex flex-col pb-20">
+
+    <!-- Header Principal -->
+    <header class="bg-gradient-to-r from-amber-700 via-orange-600 to-amber-800 text-white p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-100 text-amber-800 p-2 rounded-xl font-bold text-xl shadow-inner">
+                    📖
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-tight tracking-wide">LIBRITO</h1>
+                    <p class="text-xs text-amber-200">E.T. N° 35 Ing. E. Latzina</p>
+                </div>
+            </div>
+            
+            <!-- Badge de Puntos / Login Status -->
+            <div id="auth-status-container">
+                <button id="btn-open-auth" onclick="mostrarModalAuth()" class="bg-amber-900/40 hover:bg-amber-900/60 px-3 py-1.5 rounded-full text-xs font-semibold border border-amber-400/30 transition">
+                    <i class="fa-solid fa-user-lock mr-1"></i> Ingresar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-md mx-auto w-full p-4 flex-1">
+        
+        <!-- Banner Info Escolar -->
+        <div class="bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-300 p-3.5 rounded-2xl mb-5 shadow-sm flex items-center gap-3">
+            <div class="text-2xl text-amber-700">🤝</div>
+            <div class="text-xs text-amber-900 leading-snug">
+                <strong>Red de Tutorías Par a Par:</strong> Aprendé de un compañero o enseñá para sumar puntos canjeables en comercios adheridos.
+            </div>
+        </div>
+
+        <!-- Tab Nav: Solicitar vs Enseñar vs Catálogo -->
+        <div class="grid grid-cols-3 bg-amber-200/60 p-1 rounded-xl mb-5 text-xs font-bold text-amber-900">
+            <button id="tab-pedir" onclick="cambiarTab('pedir')" class="py-2 rounded-lg bg-white shadow-sm text-amber-800 transition">
+                <i class="fa-solid fa-graduation-cap mr-1"></i> Pedir Ayuda
+            </button>
+            <button id="tab-ensenar" onclick="cambiarTab('ensenar')" class="py-2 rounded-lg text-amber-900/70 hover:text-amber-950 transition">
+                <i class="fa-solid fa-chalkboard-user mr-1"></i> Enseñar
+            </button>
+            <button id="tab-catalogo" onclick="cambiarTab('catalogo')" class="py-2 rounded-lg text-amber-900/70 hover:text-amber-950 transition">
+                <i class="fa-solid fa-gift mr-1"></i> Premios
+            </button>
+        </div>
+
+        <!-- VISTA 1: Pedir Ayuda -->
+        <section id="sec-pedir" class="space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm">
+                <h2 class="font-bold text-amber-900 mb-3 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-amber-600"></i> ¿Qué materia necesitas reforzar?
+                </h2>
+                
+                <form id="form-solicitud" onsubmit="crearSolicitud(event)" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Materia Técnica</label>
+                        <select id="sel-materia" required class="w-full p-2.5 rounded-xl border border-amber-300 bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="">Seleccionar materia...</option>
+                            <option value="Matemática">Matemática</option>
+                            <option value="Física">Física</option>
+                            <option value="Química">Química</option>
+                            <option value="Dibujo Técnico / CAD">Dibujo Técnico / CAD</option>
+                            <option value="Electrotecnia">Electrotecnia</option>
+                            <option value="Sistemas Mecánicos">Sistemas Mecánicos</option>
+                            <option value="Programación / Taller">Programación / Taller</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Tema Específico</label>
+                        <input type="text" id="ipt-tema" required placeholder="Ej. Trigonometría, Circuitos RLC..." class="w-full p-2.5 rounded-xl border border-amber-300 bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Lugar de Encuentro dentro del Colegio</label>
+                        <input type="text" id="ipt-lugar" value="Biblioteca / Mesas del Patio" class="w-full p-2.5 rounded-xl border border-amber-300 bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-3 rounded-xl font-bold shadow-md transition flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Buscar Tutor Disponible
+                    </button>
+                </form>
+            </div>
+
+            <!-- Mis Tutorías Pedidas -->
+            <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm">
+                <h3 class="font-bold text-slate-700 text-xs mb-2">Mis Solicitudes Activas</h3>
+                <div id="lista-mis-solicitudes" class="space-y-2 text-xs text-slate-500 italic">
+                    Cargando solicitudes...
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: Enseñar (Feed Realtime para Tutores) -->
+        <section id="sec-ensenar" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-radar text-orange-500 animate-pulse"></i> Solicitudes en Tiempo Real
+                    </h2>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Realtime Activo</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">Ayudá a un compañero en el contraturno y ganá <strong>50 puntos</strong> por sesión completada.</p>
+
+                <div id="feed-tutorias" class="space-y-3">
+                    <!-- Tarjetas de tutorías cargadas dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 3: Catálogo de Premios -->
+        <section id="sec-catalogo" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm">
+                <h2 class="font-bold text-amber-900 text-sm mb-1">Catálogo de Beneficios y Premios</h2>
+                <p class="text-xs text-slate-500 mb-4">Canjeá tus puntos acumulados por vales presenciales en comercios cercanos.</p>
+
+                <div id="grid-recompensas" class="space-y-3">
+                    <!-- Recompensas cargadas dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Autenticación / Registro con Consentimiento Parental -->
+    <div id="modal-auth" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 border border-amber-200">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-amber-900 text-base" id="auth-title">Ingresar a Librito</h3>
+                <button onclick="cerrarModalAuth()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+
+            <form id="form-auth" onsubmit="ejecutarAuth(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Correo Institucional / Personal</label>
+                    <input type="email" id="auth-email" required placeholder="alumno@latzina.edu.ar" class="w-full p-2.5 rounded-xl border border-amber-300">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Contraseña</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full p-2.5 rounded-xl border border-amber-300">
+                </div>
+
+                <div id="campo-nombre" class="hidden">
+                    <label class="block font-semibold text-slate-600 mb-1">Nombre y Apellido Completo</label>
+                    <input type="text" id="auth-nombre" placeholder="Juan Pérez" class="w-full p-2.5 rounded-xl border border-amber-300">
+                </div>
+
+                <!-- Consentimiento Parental (Ley N° 25.326) -->
+                <div id="campo-consentimiento" class="hidden bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-900">
+                    <label class="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" id="auth-consentimiento" class="mt-0.5 accent-amber-600">
+                        <span>Declaro contar con autorización de mi padre/madre/tutor legal para el uso de esta app escolar (Ley N° 25.326).</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="btn-auth-submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white py-2.5 rounded-xl font-bold transition">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="text-center text-xs text-amber-900">
+                <button onclick="toggleModoAuth()" id="btn-toggle-auth" class="underline font-semibold">
+                    ¿No tenés cuenta? Registrate acá
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR Code Generado -->
+    <div id="modal-qr" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-5 shadow-2xl text-center space-y-4 border border-amber-200">
+            <h3 class="font-bold text-amber-900 text-base">¡Canje Exitoso! 🎁</h3>
+            <p class="text-xs text-slate-500">Exhibí este código QR en la caja del comercio para retirar tu premio:</p>
+            
+            <div id="qrcode-container" class="flex justify-center p-3 bg-white rounded-2xl border border-slate-200 shadow-inner"></div>
+            
+            <p id="qr-code-text" class="font-mono text-sm font-bold text-amber-800 tracking-wider"></p>
+
+            <button onclick="cerrarModalQR()" class="w-full bg-slate-800 text-white py-2 rounded-xl text-xs font-bold">
+                Entendido / Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Principal -->
+    <script src="app.js"></script>
+</body>
+</html>
