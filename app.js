@@ -109,7 +109,7 @@ async function ejecutarAuth(event) {
                 consentimiento_parental: consent,
                 puntos_balance: 0
             }]);
-            alert("Registro exitoso en Librito.");
+            alert("¡Registro exitoso! Te enviamos un correo: por favor, andá a tu Gmail para confirmar tu cuenta antes de ingresar.");
             cerrarModalAuth();
             verificarEstadoSesion();
         }
