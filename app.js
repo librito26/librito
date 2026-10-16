@@ -4,8 +4,8 @@
 // =====================================================================
 
 // Configurar con las credenciales de tu proyecto Supabase
-const CONFIG_SUPABASE_URL = "HTTPS_TU_PROYECTO_SUPABASE_URL";
-const CONFIG_SUPABASE_KEY = "TU_CLAVE_PUBLICA_ANONIMA";
+const CONFIG_SUPABASE_URL = "https://dqnusqngkflwaeayusci.supabase.co";
+const CONFIG_SUPABASE_KEY = "sb_publishable_zd7gle01RUi__NSjebV59A_5g-Xb8T5";
 
 let supabaseClient = null;
 if (window.supabase) {
